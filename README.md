@@ -10,7 +10,7 @@ Inspiration and entrypoint logic from [php composer](https://github.com/composer
 
 ```
 docker run --rm -it \
-    -u$(id -u):$(id -g) # run as current user
-    -v $(pwd):/project  # use current directory as project volume
-    init                # your gitman sub-command(s)
+    --user="$(id -u):$(id -g)"  # run as current user
+    --volume="$(pwd):/project"  # use current directory as project volume
+    init                        # your gitman sub-command(s)
 ```
