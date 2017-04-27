@@ -22,6 +22,7 @@ The entrypoint script can take all [`gitman` commandline options](https://gitman
 docker run --rm -it \
     --user="$(id -u):$(id -g)" \
     --volume="$(pwd):/project" \
+    redmatter/gitman \
     init
 ```
 
