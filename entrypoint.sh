@@ -2,6 +2,7 @@
 
 : "${PROJECT_DIR:=/project}"
 : "${GITMAN_CACHE:=/tmp}"
+: "${FIX_PERMISSIONS:=1}"
 
 isCommand() {
     case "$1" in
@@ -26,8 +27,6 @@ if [ -n "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR" ] && [ -w "$PROJECT_DIR" ]; then
         fi
     fi
 
-    set -x
-
     # check if the first argument passed in looks like a flag
     if [ "$(printf %c "$1")" = '-' ]; then
         set -- gitman "$@"
@@ -43,4 +42,14 @@ else
     exit 1
 fi
 
-exec "$@"
+if [ "$(id -u)" = 0 ] && [ "$FIX_PERMISSIONS" = 1 ]; then
+    command "$@"
+    if [ -f "${PROJECT_DIR}/gitman.yml" ] &&
+        location="$(grep ^location: "${PROJECT_DIR}/gitman.yml" | cut -c11-)" &&
+        [ -w "${PROJECT_DIR}/${location}" ];
+    then
+        chown --recursive --reference="$PROJECT_DIR" "${PROJECT_DIR}/${location}"
+    fi
+else
+    exec "$@"
+fi
